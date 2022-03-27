@@ -9,7 +9,7 @@ import (
 	"github.com/temoon/go-clientix/types"
 )
 
-type UsersResponse struct {
+type UsersListResponse struct {
 	clientix.ListResponse
 	Items []User `json:"items"`
 }
@@ -24,7 +24,8 @@ type User struct {
 	Archived bool           `json:"archived"`
 }
 
-func GetUsers(ctx context.Context, c *clientix.Client, offset, limit int) (res *UsersResponse, err error) {
+//goland:noinspection GoUnusedExportedFunction
+func GetUsersList(ctx context.Context, c *clientix.Client, offset, limit int) (res *UsersListResponse, err error) {
 	url := "https://" + c.GetDomain() + "/clientix/Restapi/list" +
 		"/a/" + c.GetAccountId() +
 		"/u/" + c.GetUserId() +

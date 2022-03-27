@@ -10,7 +10,7 @@ import (
 	"github.com/temoon/go-clientix/types"
 )
 
-type AppointmentsResponse struct {
+type AppointmentsListResponse struct {
 	clientix.ListResponse
 	Items []Appointment `json:"items"`
 }
@@ -37,7 +37,8 @@ type AppointedService struct {
 	Type      string `json:"type"`
 }
 
-func GetAppointments(ctx context.Context, c *clientix.Client, datetime time.Time, offset, limit int) (res *AppointmentsResponse, err error) {
+//goland:noinspection GoUnusedExportedFunction
+func GetAppointmentsList(ctx context.Context, c *clientix.Client, datetime time.Time, offset, limit int) (res *AppointmentsListResponse, err error) {
 	url := "https://" + c.GetDomain() + "/clientix/Restapi/list" +
 		"/a/" + c.GetAccountId() +
 		"/u/" + c.GetUserId() +

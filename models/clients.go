@@ -3,6 +3,8 @@ package models
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	netUrl "net/url"
 	"strconv"
 	"time"
 
@@ -10,7 +12,12 @@ import (
 	"github.com/temoon/go-clientix/types"
 )
 
-type ClientsResponse struct {
+type AddClientResponse struct {
+	clientix.AddResponse
+	Object Client `json:"object"`
+}
+
+type ClientsListResponse struct {
 	clientix.ListResponse
 	Items []Client `json:"items"`
 }
@@ -26,7 +33,38 @@ type Client struct {
 	Blocked    bool           `json:"blocked"`
 }
 
-func GetClients(ctx context.Context, c *clientix.Client, datetime time.Time, offset, limit int) (res *ClientsResponse, err error) {
+//goland:noinspection GoUnusedExportedFunction
+func AddClient(ctx context.Context, c *clientix.Client, values *netUrl.Values) (client *Client, err error) {
+	url := "https://" + c.GetDomain() + "/clientix/Restapi/add" +
+		"/a/" + c.GetAccountId() +
+		"/u/" + c.GetUserId() +
+		"/t/" + c.GetAccessToken() +
+		"/m/Clients/"
+
+	var data []byte
+	if data, err = c.HttpRequest(ctx, "POST", url, values); err != nil {
+		return
+	}
+
+	var res AddClientResponse
+	if err = json.Unmarshal(data, &res); err != nil {
+		return
+	}
+	if res.Status != "ok" {
+		if len(res.Messages) != 0 {
+			err = errors.New(res.Messages[0])
+		} else {
+			err = errors.New("unknown error")
+		}
+
+		return
+	}
+
+	return &res.Object, nil
+}
+
+//goland:noinspection GoUnusedExportedFunction
+func GetClientsList(ctx context.Context, c *clientix.Client, datetime time.Time, offset, limit int) (res *ClientsListResponse, err error) {
 	url := "https://" + c.GetDomain() + "/clientix/Restapi/list" +
 		"/a/" + c.GetAccountId() +
 		"/u/" + c.GetUserId() +

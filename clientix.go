@@ -5,6 +5,8 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	netUrl "net/url"
+	"strings"
 	"time"
 
 	"golang.org/x/time/rate"
@@ -65,9 +67,14 @@ func (c *Client) GetAccessToken() string {
 	return c.opts.AccessToken
 }
 
-func (c *Client) HttpRequest(ctx context.Context, method, url string, body io.Reader) (data []byte, err error) {
+func (c *Client) HttpRequest(ctx context.Context, method, url string, values *netUrl.Values) (data []byte, err error) {
 	if err = c.rateLimiter.Wait(ctx); err != nil {
 		return
+	}
+
+	var body io.Reader
+	if values != nil {
+		body = strings.NewReader(values.Encode())
 	}
 
 	timeoutCtx, cancel := context.WithTimeout(ctx, c.opts.Timeout)
