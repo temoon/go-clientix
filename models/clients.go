@@ -3,7 +3,6 @@ package models
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	netUrl "net/url"
 	"strconv"
 	"time"
@@ -50,14 +49,8 @@ func AddClient(ctx context.Context, c *clientix.Client, values *netUrl.Values) (
 	if err = json.Unmarshal(data, &res); err != nil {
 		return
 	}
-	if res.Status != "ok" {
-		if len(res.Messages) != 0 {
-			err = errors.New(res.Messages[0])
-		} else {
-			err = errors.New("unknown error")
-		}
-
-		return
+	if !res.IsOk() {
+		return nil, res.GetError()
 	}
 
 	return &res.Object, nil

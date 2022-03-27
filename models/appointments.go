@@ -3,12 +3,17 @@ package models
 import (
 	"context"
 	"encoding/json"
+	netUrl "net/url"
 	"strconv"
 	"time"
 
 	"github.com/temoon/go-clientix"
 	"github.com/temoon/go-clientix/types"
 )
+
+type EditAppointmentResponse struct {
+	clientix.EditResponse
+}
 
 type AppointmentsListResponse struct {
 	clientix.ListResponse
@@ -35,6 +40,30 @@ type AppointedService struct {
 	ServiceId int32  `json:"service_id"`
 	Name      string `json:"name"`
 	Type      string `json:"type"`
+}
+
+//goland:noinspection GoUnusedExportedFunction
+func EditAppointment(ctx context.Context, c *clientix.Client, values *netUrl.Values) (ok bool, err error) {
+	url := "https://" + c.GetDomain() + "/clientix/Restapi/edit" +
+		"/a/" + c.GetAccountId() +
+		"/u/" + c.GetUserId() +
+		"/t/" + c.GetAccessToken() +
+		"/m/Appointments/"
+
+	var data []byte
+	if data, err = c.HttpRequest(ctx, "POST", url, values); err != nil {
+		return
+	}
+
+	var res EditAppointmentResponse
+	if err = json.Unmarshal(data, &res); err != nil {
+		return
+	}
+	if !res.IsOk() {
+		return false, res.GetError()
+	}
+
+	return true, nil
 }
 
 //goland:noinspection GoUnusedExportedFunction
