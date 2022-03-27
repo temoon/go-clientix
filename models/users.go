@@ -15,7 +15,7 @@ type UsersListResponse struct {
 }
 
 type User struct {
-	Id       int32          `json:"id"`
+	Id       int            `json:"id"`
 	Name     string         `json:"name"`
 	Phone    types.Phone    `json:"phone"`
 	Email    string         `json:"email"`
@@ -25,7 +25,7 @@ type User struct {
 }
 
 //goland:noinspection GoUnusedExportedFunction
-func GetUsersList(ctx context.Context, c *clientix.Client, offset, limit int) (res *UsersListResponse, err error) {
+func GetUsersList(ctx context.Context, c *clientix.Client, offset, limit int) (users []User, err error) {
 	url := "https://" + c.GetDomain() + "/clientix/Restapi/list" +
 		"/a/" + c.GetAccountId() +
 		"/u/" + c.GetUserId() +
@@ -38,9 +38,12 @@ func GetUsersList(ctx context.Context, c *clientix.Client, offset, limit int) (r
 		return
 	}
 
+	var res UsersListResponse
 	if err = json.Unmarshal(data, &res); err != nil {
 		return
 	}
+
+	users = res.Items
 
 	return
 }

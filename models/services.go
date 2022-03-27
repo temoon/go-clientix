@@ -15,7 +15,7 @@ type ServicesListResponse struct {
 }
 
 type Service struct {
-	Id       int32          `json:"id"`
+	Id       int            `json:"id"`
 	Type     string         `json:"type"`
 	Name     string         `json:"name"`
 	Price    string         `json:"price"`
@@ -25,7 +25,7 @@ type Service struct {
 }
 
 //goland:noinspection GoUnusedExportedFunction
-func GetServicesList(ctx context.Context, c *clientix.Client, offset, limit int) (res *ServicesListResponse, err error) {
+func GetServicesList(ctx context.Context, c *clientix.Client, offset, limit int) (services []Service, err error) {
 	url := "https://" + c.GetDomain() + "/clientix/Restapi/list" +
 		"/a/" + c.GetAccountId() +
 		"/u/" + c.GetUserId() +
@@ -38,9 +38,12 @@ func GetServicesList(ctx context.Context, c *clientix.Client, offset, limit int)
 		return
 	}
 
+	var res ServicesListResponse
 	if err = json.Unmarshal(data, &res); err != nil {
 		return
 	}
+
+	services = res.Items
 
 	return
 }

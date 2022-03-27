@@ -30,6 +30,7 @@ type Opts struct {
 	AccessToken string
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func New(opts Opts) *Client {
 	return &Client{
 		opts: opts,

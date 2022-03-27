@@ -24,3 +24,17 @@ func (t *Phone) UnmarshalJSON(b []byte) (err error) {
 
 	return
 }
+
+func (t Phone) IsValid() bool {
+	if len(t) < 2 || t[0] != '+' {
+		return false
+	}
+
+	for _, c := range t[1:] {
+		if c < '0' || c > '9' {
+			return false
+		}
+	}
+
+	return true
+}
