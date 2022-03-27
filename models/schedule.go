@@ -38,7 +38,7 @@ func GetAvailableTime(ctx context.Context, c *clientix.Client, filter *ScheduleF
 		return nil, errors.New("start datetime required or invalid")
 	}
 
-	if !filter.FinishDatetime.IsZero() {
+	if filter.FinishDatetime.After(filter.StartDatetime) {
 		url += "&finish_day=" + filter.FinishDatetime.Format("2006-01-02")
 	}
 

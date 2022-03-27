@@ -45,7 +45,7 @@ type AppointedService struct {
 	Id        int    `json:"id"`
 	ServiceId int    `json:"service_id"`
 	Name      string `json:"name"`
-	Type      string `json:"type"`
+	Type      string `json:"type,omitempty"`
 }
 
 //goland:noinspection GoUnusedExportedFunction
@@ -59,13 +59,13 @@ func AddAppointment(ctx context.Context, c *clientix.Client, appointment *Appoin
 	// region Values
 	values := netUrl.Values{}
 
-	if appointment.ClientId <= 0 {
+	if appointment.ClientId > 0 {
 		values.Add("client_id", strconv.Itoa(appointment.ClientId))
 	} else {
 		return errors.New("client id required or invalid")
 	}
 
-	if appointment.ExecutorId <= 0 {
+	if appointment.ExecutorId > 0 {
 		values.Add("executor_id", strconv.Itoa(appointment.ExecutorId))
 	} else {
 		return errors.New("executor id required or invalid")
@@ -86,7 +86,7 @@ func AddAppointment(ctx context.Context, c *clientix.Client, appointment *Appoin
 	}
 
 	finishDatetime := time.Time(appointment.FinishDatetime).Round(15 * time.Minute)
-	if !finishDatetime.Before(startDatetime) && !finishDatetime.Equal(startDatetime) {
+	if finishDatetime.After(startDatetime) {
 		values.Add("finish_datetime", finishDatetime.Format("2006-01-02"))
 		values.Add("finish_time", finishDatetime.Format("15:04:05"))
 	} else {
@@ -123,7 +123,7 @@ func EditAppointment(ctx context.Context, c *clientix.Client, appointment *Appoi
 	// region Values
 	values := netUrl.Values{}
 
-	if appointment.Id <= 0 {
+	if appointment.Id > 0 {
 		values.Add("id", strconv.Itoa(appointment.Id))
 	} else {
 		return errors.New("id required or invalid")
@@ -147,7 +147,7 @@ func EditAppointment(ctx context.Context, c *clientix.Client, appointment *Appoi
 	}
 
 	finishDatetime := time.Time(appointment.FinishDatetime).Round(15 * time.Minute)
-	if !finishDatetime.Before(startDatetime) && !finishDatetime.Equal(startDatetime) {
+	if finishDatetime.After(startDatetime) {
 		values.Add("finish_datetime", finishDatetime.Format("2006-01-02 15:04:05"))
 	}
 	// endregion
