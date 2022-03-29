@@ -12,10 +12,10 @@ import (
 )
 
 type ScheduleResponse struct {
-	Items Schedule `json:"items"`
+	Items interface{} `json:"items"`
 }
 
-type Schedule map[string]types.DateTime
+type Schedule map[string][]types.DateTime
 
 type ScheduleFilterOpts struct {
 	StartDatetime  time.Time
@@ -60,7 +60,41 @@ func GetAvailableTime(ctx context.Context, c *clientix.Client, filter *ScheduleF
 		return
 	}
 
-	schedule = res.Items
+	switch items := res.Items.(type) {
+	case map[string]interface{}:
+		var values []interface{}
+		var value string
+		var datetime time.Time
+		var ok bool
+
+		schedule = make(Schedule, len(items))
+		for day, item := range items {
+			if values, ok = item.([]interface{}); ok {
+				schedule[day] = make([]types.DateTime, 0, len(values))
+				for i := 0; i < len(values); i++ {
+					if value, ok = values[i].(string); ok {
+						if datetime, err = time.Parse("2006-01-02 15:04:05", value); err != nil {
+							continue
+						}
+
+						schedule[day] = append(schedule[day], types.DateTime(datetime))
+					} else {
+						continue
+					}
+				}
+			} else {
+				continue
+			}
+		}
+	case string:
+		schedule = nil
+		if items != "No data" {
+			err = errors.New(items)
+		}
+	default:
+		schedule = nil
+		err = errors.New("no data")
+	}
 
 	return
 }
