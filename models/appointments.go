@@ -10,20 +10,21 @@ import (
 	"time"
 
 	"github.com/temoon/go-clientix"
+	"github.com/temoon/go-clientix/responses"
 	"github.com/temoon/go-clientix/types"
 )
 
 type AddAppointmentResponse struct {
-	clientix.AddResponse
+	responses.AddEditResponse
 	Object Client `json:"object"`
 }
 
 type EditAppointmentResponse struct {
-	clientix.EditResponse
+	responses.AddEditResponse
 }
 
 type AppointmentsListResponse struct {
-	clientix.ListResponse
+	responses.ListResponse
 	Items []Appointment `json:"items"`
 }
 
@@ -114,7 +115,7 @@ func AddAppointment(ctx context.Context, c *clientix.Client, appointment *Appoin
 		return
 	}
 	if !res.IsOk() {
-		return res.GetError()
+		return res.GetFirstError()
 	}
 
 	appointment.Id = res.Object.Id
@@ -172,7 +173,7 @@ func EditAppointment(ctx context.Context, c *clientix.Client, appointment *Appoi
 		return
 	}
 	if !res.IsOk() {
-		return res.GetError()
+		return res.GetFirstError()
 	}
 
 	return

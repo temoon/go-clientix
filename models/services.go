@@ -6,11 +6,12 @@ import (
 	"strconv"
 
 	"github.com/temoon/go-clientix"
+	"github.com/temoon/go-clientix/responses"
 	"github.com/temoon/go-clientix/types"
 )
 
 type ServicesListResponse struct {
-	clientix.ListResponse
+	responses.ListResponse
 	Items []Service `json:"items"`
 }
 

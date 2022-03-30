@@ -9,16 +9,17 @@ import (
 	"time"
 
 	"github.com/temoon/go-clientix"
+	"github.com/temoon/go-clientix/responses"
 	"github.com/temoon/go-clientix/types"
 )
 
 type AddClientResponse struct {
-	clientix.AddResponse
+	responses.AddEditResponse
 	Object Client `json:"object"`
 }
 
 type ClientsListResponse struct {
-	clientix.ListResponse
+	responses.ListResponse
 	Items []Client `json:"items"`
 }
 
@@ -86,7 +87,7 @@ func AddClient(ctx context.Context, c *clientix.Client, client *Client) (err err
 		return
 	}
 	if !res.IsOk() {
-		return res.GetError()
+		return res.GetFirstError()
 	}
 
 	client.Id = res.Object.Id
