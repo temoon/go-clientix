@@ -6,6 +6,7 @@ import (
 	"errors"
 	netUrl "net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/temoon/go-clientix"
@@ -91,6 +92,15 @@ func AddAppointment(ctx context.Context, c *clientix.Client, appointment *Appoin
 		values.Add("finish_time", finishDatetime.Format("15:04:05"))
 	} else {
 		return errors.New("finish datetime required or invalid")
+	}
+
+	if servicesCount := len(appointment.Services); servicesCount != 0 {
+		serviceIds := make([]string, servicesCount)
+		for i := 0; i < servicesCount; i++ {
+			serviceIds[i] = strconv.Itoa(appointment.Services[i].ServiceId)
+		}
+
+		values.Add("appointed_services", "["+strings.Join(serviceIds, ",")+"]")
 	}
 	// endregion
 
