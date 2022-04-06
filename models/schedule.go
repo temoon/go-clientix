@@ -17,7 +17,14 @@ type ScheduleResponse struct {
 	Items interface{} `json:"items"`
 }
 
-type Schedule map[string][]types.DateTime
+type Schedule map[string][]time.Time
+
+type ScheduleFilterOpts struct {
+	StartDatetime  time.Time
+	FinishDatetime time.Time
+	ExecutorId     int
+	ServiceId      int
+}
 
 func (r *ScheduleResponse) GetItems() (schedule Schedule, err error) {
 	switch items := r.Items.(type) {
@@ -30,14 +37,14 @@ func (r *ScheduleResponse) GetItems() (schedule Schedule, err error) {
 		schedule = make(Schedule, len(items))
 		for day, item := range items {
 			if values, ok = item.([]interface{}); ok {
-				schedule[day] = make([]types.DateTime, 0, len(values))
+				schedule[day] = make([]time.Time, 0, len(values))
 				for i := 0; i < len(values); i++ {
 					if value, ok = values[i].(string); ok {
-						if datetime, err = time.Parse("2006-01-02 15:04:05", value); err != nil {
+						if datetime, err = time.ParseInLocation("2006-01-02 15:04:05", value, types.MskLocation); err != nil {
 							continue
 						}
 
-						schedule[day] = append(schedule[day], types.DateTime(datetime))
+						schedule[day] = append(schedule[day], datetime)
 					} else {
 						continue
 					}
@@ -55,13 +62,6 @@ func (r *ScheduleResponse) GetItems() (schedule Schedule, err error) {
 	}
 
 	return
-}
-
-type ScheduleFilterOpts struct {
-	StartDatetime  time.Time
-	FinishDatetime time.Time
-	ExecutorId     int
-	ServiceId      int
 }
 
 //goland:noinspection GoUnusedExportedFunction
