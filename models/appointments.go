@@ -16,7 +16,7 @@ import (
 
 type AddAppointmentResponse struct {
 	responses.AddEditResponse
-	Object Client `json:"object"`
+	Object Appointment `json:"object"`
 }
 
 type EditAppointmentResponse struct {
