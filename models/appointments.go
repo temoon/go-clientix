@@ -44,10 +44,11 @@ type Appointment struct {
 }
 
 type AppointedService struct {
-	Id        int    `json:"id"`
-	ServiceId int    `json:"service_id"`
-	Name      string `json:"name"`
-	Type      string `json:"type,omitempty"`
+	Id        int         `json:"id"`
+	ServiceId int         `json:"service_id"`
+	Name      string      `json:"name"`
+	Type      string      `json:"type,omitempty"`
+	Price     json.Number `json:"price,omitempty"`
 }
 
 //goland:noinspection GoUnusedExportedFunction
