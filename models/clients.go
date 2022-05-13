@@ -15,12 +15,7 @@ import (
 
 type AddClientResponse struct {
 	responses.AddEditResponse
-	Status string `json:"status"`
 	Object Client `json:"object"`
-}
-
-func (r *AddClientResponse) IsOk() bool {
-	return r.Status == "ok" && len(r.Errors) == 0
 }
 
 type ClientsListResponse struct {

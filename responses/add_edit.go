@@ -5,13 +5,24 @@ import (
 )
 
 type AddEditResponse struct {
-	Status   bool                `json:"status"`
+	Status   interface{}         `json:"status"`
 	Messages []string            `json:"messages"`
 	Errors   map[string][]string `json:"errors"`
 }
 
 func (r *AddEditResponse) IsOk() bool {
-	return r.Status && len(r.Errors) == 0
+	return r.GetStatus() && len(r.Errors) == 0
+}
+
+func (r *AddEditResponse) GetStatus() bool {
+	switch status := r.Status.(type) {
+	case string:
+		return status == "ok"
+	case bool:
+		return status
+	}
+
+	return false
 }
 
 func (r *AddEditResponse) GetFirstMessage() string {
